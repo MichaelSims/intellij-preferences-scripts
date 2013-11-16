@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $homeDir = $ENV{"HOME"};
+my $ideaDir = $ARGV[0];
+my @subDirs = ("Application Support", "Caches", "Logs", "Preferences");
+
+if ($ideaDir !~ /^(?:IntelliJ)?Idea/) {
+  die "Cowardly refusing to delete directories named $ideaDir\n";
+}
+
+for my $subDir (@subDirs) {
+  runCommand("rm -Rf \"$homeDir/Library/$subDir/$ideaDir\"");
+}
+
+sub runCommand {
+
+  my $cmd = shift;
+
+  print STDERR "Executing $cmd...";
+  system($cmd);
+  print STDERR " done.\n";
+
+  if ($? != 0) {
+    print STDERR "Command \"$cmd\" failed, return value was $?\n";
+    exit 1;
+  } else {
+    return 1;
+  }
+
+}

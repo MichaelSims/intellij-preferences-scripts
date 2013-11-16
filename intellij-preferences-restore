@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $homeDir = $ENV{"HOME"};
+my $ideaDir = $ARGV[0];
+my $backupDir = $ARGV[1];
+my @subDirs = ("Application Support", "Caches", "Logs", "Preferences");
+
+print "Restoring from $backupDir\n";
+for my $subDir (@subDirs) {
+  my $destDir = "$homeDir/Library/$subDir/$ideaDir";
+  if (-d $destDir) {
+    die "$destDir exists, refusing to overwrite\n";
+  }
+}
+
+for my $subDir (@subDirs) {
+  my $destDir = "$homeDir/Library/$subDir/$ideaDir";
+  runCommand("cp -a \"$backupDir/$subDir/$ideaDir\" \"$destDir\"");
+}
+
+sub runCommand {
+
+  my $cmd = shift;
+
+  print STDERR "Executing $cmd...";
+  system($cmd);
+  print STDERR " done.\n";
+
+  if ($? != 0) {
+    print STDERR "Command \"$cmd\" failed, return value was $?\n";
+    exit 1;
+  } else {
+    return 1;
+  }
+
+}
