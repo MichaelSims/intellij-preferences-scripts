@@ -7,10 +7,6 @@ my $homeDir = $ENV{"HOME"};
 my $ideaDir = $ARGV[0];
 my @subDirs = ("Application Support", "Caches", "Logs", "Preferences");
 
-if ($ideaDir !~ /^(?:IntelliJ)?Idea/) {
-  die "Cowardly refusing to delete directories named $ideaDir\n";
-}
-
 for my $subDir (@subDirs) {
   runCommand("rm -Rf \"$homeDir/Library/$subDir/$ideaDir\"");
 }
