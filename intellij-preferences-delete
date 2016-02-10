@@ -2,13 +2,34 @@
 
 use strict;
 use warnings;
+use Term::ReadKey;
 
 my $homeDir = $ENV{"HOME"};
 my $ideaDir = $ARGV[0];
 my @subDirs = ("Application Support", "Caches", "Logs", "Preferences");
 
+unless ($ideaDir) {
+  die "Please provide the preference directory name as the only argument\n";
+}
+
+my @commands = ();
 for my $subDir (@subDirs) {
-  runCommand("rm -Rf \"$homeDir/Library/$subDir/$ideaDir\"");
+  push(@commands, "rm -Rf \"$homeDir/Library/$subDir/$ideaDir\"");
+}
+
+print "THIS IS POTENTIALLY DANGEROUS! I will run the following commands:\n";
+for my $command (@commands) {
+  print "$command\n";
+}
+my $continue = promptUser("Is this OK? ");
+$continue = trim(lc $continue);
+if ($continue ne 'y' && $continue ne 'yes') {
+  print "Aborted.\n";
+  exit 1;
+}
+
+for my $command (@commands) {
+  runCommand($command);
 }
 
 sub runCommand {
@@ -27,3 +48,24 @@ sub runCommand {
   }
 
 }
+
+sub promptUser {
+
+  my $prompt = shift;
+  
+  my $response;
+  for (;;) {
+    print $prompt." ";
+    $response = trim(ReadLine(0));
+    
+    last if ($response ne '');
+    
+    print "Please enter a value.\n";
+    
+  }
+  
+  return $response;
+  
+}
+
+sub trim { my ($str) = @_; $str =~ s/^\s+//; $str =~ s/\s+$//; return $str }
